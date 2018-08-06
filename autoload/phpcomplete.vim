@@ -420,7 +420,7 @@ function! phpcomplete#CompleteGeneral(base, current_namespace, imports) " {{{
 	let int_constants = {}
 	for i in int_values
 		let c_name = matchstr(i, '\(["'']\)\zs[a-zA-Z_\x7f-\xff][a-zA-Z_0-9\x7f-\xff]*\ze\1')
-		if c_name != '' && c_name =~# '^'.substitute(a:base, '\\', '\\\\', 'g')
+		if c_name != '' && c_name =~? '^'.substitute(a:base, '\\', '\\\\', 'g')
 			let int_constants[leading_slash.c_name] = ''
 		endif
 	endfor
@@ -765,7 +765,7 @@ function! phpcomplete#CompleteUnknownClass(base, context) " {{{
 	call extend(all_values, g:php_builtin_object_functions)
 
 	for m in sort(keys(all_values))
-		if m =~ '\(^\|::\)'.a:base
+		if m =~? '\(^\|::\)'.a:base
 			call add(res, m)
 		endif
 	endfor
@@ -818,7 +818,7 @@ function! phpcomplete#CompleteVariable(base) " {{{
 	" ctags has support for PHP, use tags file for external variables
 	if  g:phpcomplete_search_tags_for_variables
 		let ext_vars = {}
-		let tags = phpcomplete#GetTaglist('\C^'.substitute(a:base, '^\$', '', ''))
+		let tags = phpcomplete#GetTaglist('\c^'.substitute(a:base, '^\$', '', ''))
 		for tag in tags
 			if tag.kind ==? 'v'
 				let item = tag.name
@@ -834,7 +834,7 @@ function! phpcomplete#CompleteVariable(base) " {{{
 	endif
 
 	for m in sort(keys(int_vars))
-		if m =~# '^\'.a:base
+		if m =~? '^\'.a:base
 			call add(res, m)
 		endif
 	endfor
@@ -1345,8 +1345,9 @@ function! phpcomplete#CompleteUserClass(context, base, sccontent, visibility) " 
 	call extend(all_values, c_variables)
 	call extend(all_values, c_constants)
 
+	let lower_base = tolower(a:base)
 	for m in sort(keys(all_values))
-		if stridx(m, a:base) == 0
+		if stridx(tolower(m), lower_base) == 0
 			call add(res, m)
 		endif
 	endfor
