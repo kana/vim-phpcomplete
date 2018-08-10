@@ -182,7 +182,7 @@ function! phpcomplete#CompletePHP(findstart, base)
   " Becauses sort() compares dictionaries by their string representaions.
   call map(result, '[v:val.word, v:val]')
   call sort(result, 'i')
-  call map(result, 'v:val[1]')
+  call map(result, 'extend(v:val[1], {"icase": 1})')
   return result
 endfunction
 
