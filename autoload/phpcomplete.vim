@@ -172,7 +172,21 @@ endif
 
 let s:script_path = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 
-function! phpcomplete#CompletePHP(findstart, base) " {{{
+function! phpcomplete#CompletePHP(findstart, base)
+  let result = s:completePHP(a:findstart, a:base)
+  if type(result) != v:t_list
+    return result
+  endif
+
+  " NB: This sorting does not work if word contains a single quote.
+  " Becauses sort() compares dictionaries by their string representaions.
+  call map(result, '[v:val.word, v:val]')
+  call sort(result, 'i')
+  call map(result, 'v:val[1]')
+  return result
+endfunction
+
+function! s:completePHP(findstart, base) " {{{
 	if a:findstart
 		unlet! b:php_menu
 		" Check if we are inside of PHP markup
